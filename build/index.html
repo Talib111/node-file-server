@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload & Download</title>
+    <link href="./index.css" rel="stylesheet">
+
+</head>
+
+<body style="background-color: #f7f7f7;">
+    <h1 class="mt-5 md:w-1/3 mx-auto px-3 mb-7"><span class="block mx-auto"><img class="w-7 inline mr-2"
+                src="./media/folders.png" alt="download">Upload & download files</span></h1>
+
+
+    <!-- Heading tabs -->
+    <div class="w-full md:w-1/3 px-3 mx-auto mb-3">
+        <div class="flex space-x-4">
+            <div onclick="fetchDownloadList()" class="flex-1  py-1  text-center  hover:space-x-1"><button
+                    class="bg-blue-400 px-2 py-1 text-white  rounded-sm shadow-lg">Download</button></div>
+            <div onclick="fetchUploadedList()" class="flex-1 py-1   text-center  hover:space-x-1"><button
+                    class="bg-blue-400 px-2 py-1 text-white rounded-sm shadow-lg">Uploaded</button></div>
+            <div onclick="fetchAllList()" class="flex-1  py-1   text-center  hover:space-x-1"><button
+                    class="bg-blue-400 px-6 py-1 text-white  rounded-sm shadow-lg">All</button></div>
+        </div>
+    </div>
+
+    <!-- This container holds the dyanmic list of files via ajax -->
+    <div id="container" class="w-full md:w-1/3 px-3 mx-auto pb-20">
+
+    </div>
+    <form name="uploadForm" class="w-full md:w-1/3 px-3 mx-auto px-16" action="/upload" enctype="multipart/form-data"
+        method="post">
+        <div class="text-center">
+            <div class="px-10 bg-blue-600 text-right">
+                <label for="fileInput">
+                    <span
+                        class="shadow-lg border-2 border-blue-200 bg-white shadow-3xl p-4 rounded-full fixed bottom-10 hover:bg-gray-200"><img
+                            class="w-12 inline" src="./media/upload.png" alt="upload"></span>
+                    <input onchange="uploadFiles()" id="fileInput" type="file" class="form-control-ficlsle hidden"
+                        name="uploaded_file">
+                </label>
+            </div>
+            <!-- <div class="bg-gray-200 shadow-lg py-10 hidden">
+                <div class=" text-center"><button type="submit"
+                        class="bg-green-500 text-white px-4 py-1 rounded-md shadow-xl hover:bg-green-600">Upload</button>
+                </div>
+            </div> -->
+            <div id="loader" class="bg-gray-200 shadow-lg py-10 absolute left-0 right-0 top-56" style="display: none;">
+                <div
+                    class="animate-spin mx-auto w-10 h-10 border-2 border-white border-b-2 border-b-blue-500 rounded-full">
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+
+
+    <script>
+
+        // let baseUrl = 'http://localhost:82'
+        let baseUrl = 'http://192.168.206.140:82'
+        //function to fetchFileList available in download directory
+        function fetchDownloadList() {
+            fetch(`${baseUrl}/download-files`)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    listFiles(data?.files)
+                });
+        }
+
+        //function to fetchFileList available in upload directory
+        function fetchUploadedList() {
+            fetch(`${baseUrl}/uploaded-files`)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    listFiles(data?.files)
+                });
+        }
+
+        //function to fetchFileList available in both upload and download directory
+        function fetchAllList() {
+            fetch(`${baseUrl}/all-files`)
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+                    listFiles(data?.files)
+                });
+        }
+
+        //function to make html layout from list of files to make it view and download individually
+        function listFiles(files) {
+            //declaring fileLink array to store all file anchor links to download
+            let fileLink
+
+            //iterating and saving all file layout into fileLink array
+            files.map((file, index) => {
+                fileLink += `<div class="flex w-full mt-2 border-b border-b-gray py-2 space-x-4 px-2">
+                                    <div class="flex-initial">${index + 1}</div>
+                                    <div class="flex-initial"><span class="bg-yellow-100 px-3 rounded-full text-xs">jpg</span> </div>
+                                    <div class="flex-initial w-40 mr-4"><button>${file}</button></div>
+                                    <div class="flex-1 float-right">
+                                        <span onclick="downloadFile('${file}')" class="shadow-lg rounded-full border border-gray p-2 w-15 h-15 hover:bg-gray-300"><img
+                                                class="w-7 inline" src="./media/download.png" alt="download">
+                                        </span>
+                                    </div>
+                                </div>`
+            })
+
+
+            let fileList = ` <div class="bg-white shadow-lg py-10 px-2 rounded-lg">
+                                <div class="flex w-full bg-green-50 space-x-4 px-2 font-semibold">
+                                    <div class="flex-initial">#</div>
+                                    <div class="flex-initial">Type</div>
+                                    <div class="flex-initial"><button>Name</button></div>
+                                </div>
+                                ${fileLink}
+           
+                            </div>`
+
+            //putting created layout into container div to show list of files
+            document.getElementById('container').innerHTML = fileList
+        }
+
+        function downloadFile(fileName) {
+            //using window.open instead ajax call since most browsers doesn't support download with ajax
+            window.open(`${baseUrl}/download?fileName=${fileName}`)
+            return
+        }
+
+        //function to post files to upload
+        function uploadFiles() {
+            document.getElementById('loader').style.display = 'block'
+            document.uploadForm.submit()
+            return
+            fetch(`${baseUrl}/upload`, {
+                Method: 'POST',
+                Headers: {
+                    Accept: 'application.json',
+                    'Content-Type': 'application/json'
+                },
+                Body: body
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(data)
+
+                });
+        }
+
+        //calling fetchDownloadList function to get all files in public files folder on page load
+        fetchDownloadList()
+    </script>
+</body>
+
+</html>
