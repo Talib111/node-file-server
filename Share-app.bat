@@ -5,6 +5,7 @@ Title Get IP and MAC Address
 )
 
 echo GO TO THIS IP : %MY_IP%
-cd C:\NODE\node-file-server
+@REM cd C:\NODE\node-file-server
+cd .
 node server.js
 pause
