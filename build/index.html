@@ -61,11 +61,8 @@
 
     <script>
 
-        // let baseUrl = 'http://localhost:82'
-        let baseUrl = 'http://192.168.206.140:82'
-        //function to fetchFileList available in download directory
         function fetchDownloadList() {
-            fetch(`${baseUrl}/download-files`)
+            fetch(`/download-files`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
@@ -75,7 +72,7 @@
 
         //function to fetchFileList available in upload directory
         function fetchUploadedList() {
-            fetch(`${baseUrl}/uploaded-files`)
+            fetch(`/uploaded-files`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
@@ -85,7 +82,7 @@
 
         //function to fetchFileList available in both upload and download directory
         function fetchAllList() {
-            fetch(`${baseUrl}/all-files`)
+            fetch(`/all-files`)
                 .then((response) => response.json())
                 .then((data) => {
                     console.log(data)
@@ -129,7 +126,7 @@
 
         function downloadFile(fileName) {
             //using window.open instead ajax call since most browsers doesn't support download with ajax
-            window.open(`${baseUrl}/download?fileName=${fileName}`)
+            window.open(`/download?fileName=${fileName}`)
             return
         }
 
@@ -138,7 +135,7 @@
             document.getElementById('loader').style.display = 'block'
             document.uploadForm.submit()
             return
-            fetch(`${baseUrl}/upload`, {
+            fetch(`/upload`, {
                 Method: 'POST',
                 Headers: {
                     Accept: 'application.json',

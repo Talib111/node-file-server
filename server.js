@@ -30,9 +30,9 @@ app.get("/", (req, res) => {
 
 // Route to get all files from files folder
 app.get("/download-files", (req, res) => {
-  console.log('inside download files...')
+  // console.log('inside download files...')
   let files = []
-  const testFolder = './build/files';
+  const testFolder = './build/send-from-pc-to-phone';
   readdirSync(testFolder).forEach(file => {
     files = [...files, file]
   });
@@ -40,8 +40,9 @@ app.get("/download-files", (req, res) => {
 });
 // Route to get all files from upload folder
 app.get("/uploaded-files", (req, res) => {
+  // console.log('inside uploaded files...')
   let files = []
-  const testFolder = './build/upload';
+  const testFolder = './build/uploaded-from-phone';
   readdirSync(testFolder).forEach(file => {
     files = [...files, file]
   });
@@ -49,9 +50,10 @@ app.get("/uploaded-files", (req, res) => {
 });
 // Route to get all files from files folder
 app.get("/all-files", (req, res) => {
+  // console.log('inside all files...')
   let files = []
-  const testFolder1 = './build/files';
-  const testFolder2 = './build/upload';
+  const testFolder1 = './build/send-from-pc-to-phone';
+  const testFolder2 = './build/uploaded-from-phone';
   readdirSync(testFolder1).forEach(file => {
     files = [...files, file]
   });
@@ -63,7 +65,7 @@ app.get("/all-files", (req, res) => {
 
 // Route to download specific file wich is sent in get url
 app.get('/download', function (req, res) {
-  let path = `./build/files/${req?.query?.fileName}`
+  let path = `./build/send-from-pc-to-phone/${req?.query?.fileName}`
   res.download(path)
 });
 
@@ -72,7 +74,7 @@ app.get('/download', function (req, res) {
 const upload = multer({
   storage: multer.diskStorage({
     destination:function(req,file,cb){
-      cb(null,'./build/upload')
+      cb(null,'./build/uploaded-from-phone')
     },
     filename: function(req,file,cb){
       // const ext = file.mimetype.split("/")[1];
@@ -84,11 +86,11 @@ const upload = multer({
 
 //route to upload file in upload folder
 app.post('/upload',upload, function (req, res) {
-  console.log('file uploaded')
+  // console.log('file uploaded')
 res.redirect('/')
 });
 
 // Start express server on port 82
-app.listen(82, () => {
-  console.log("server started on port 82");
+app.listen(80, () => {
+  console.log("server started on port 80");
 });
